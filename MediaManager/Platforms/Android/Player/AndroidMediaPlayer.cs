@@ -19,7 +19,6 @@ using MediaManager.Platforms.Android.Queue;
 using MediaManager.Platforms.Android.Video;
 using MediaManager.Player;
 using MediaManager.Video;
-using VideoView = MediaManager.Platforms.Android.Video.VideoView;
 
 namespace MediaManager.Platforms.Android.Player
 {
@@ -50,8 +49,8 @@ namespace MediaManager.Platforms.Android.Player
         public PlayerEventListener PlayerEventListener { get; set; }
         protected RatingCallback RatingCallback { get; set; }
 
-        private SimpleExoPlayer _player;
-        public SimpleExoPlayer Player
+        private IExoPlayer _player;
+        public IExoPlayer Player
         {
             get
             {
@@ -155,7 +154,7 @@ namespace MediaManager.Platforms.Android.Player
             else
                 UserAgent = Util.GetUserAgent(Context, Context.PackageName);
 
-            HttpDataSourceFactory = new DefaultHttpDataSource.Factory().SetUserAgent(UserAgent).SetAllowCrossProtocolRedirects(true);
+            HttpDataSourceFactory = new DefaultHttpDataSource.Factory().SetUserAgent(UserAgent);
             UpdateRequestHeaders();
 
             MediaSource = new ConcatenatingMediaSource();
@@ -164,29 +163,9 @@ namespace MediaManager.Platforms.Android.Player
             DashChunkSourceFactory = new DefaultDashChunkSource.Factory(DataSourceFactory);
             SsChunkSourceFactory = new DefaultSsChunkSource.Factory(DataSourceFactory);
 
-
-            // Improve buffering based on https://stackoverflow.com/questions/42643590/exoplayer-how-to-load-bigger-parts-of-remote-audio-files
-            var bandwidthMeter = new DefaultBandwidthMeter.Builder(Context).Build();
-
-            var loadControl = new DefaultLoadControl.Builder()
-                .SetAllocator(new DefaultAllocator(true, C.DefaultBufferSegmentSize))
-                .SetBufferDurationsMs(
-                    MediaManager.LoadControlSettings.MinBufferMs,
-                    MediaManager.LoadControlSettings.MaxBufferMs,
-                    
-                    MediaManager.LoadControlSettings.DefaultBufferForPlaybackMs, // buffer for playback
-                    MediaManager.LoadControlSettings.DefaultBufferForPlaybackAfterRebufferMs // buffer for playback affer rebuffer
-                )
-                .SetTargetBufferBytes(MediaManager.LoadControlSettings.TargetBufferBytes)
-                .SetPrioritizeTimeOverSizeThresholds(MediaManager.LoadControlSettings.PrioritizeTimeOverSizeTresholds)
-                
-                .Build();
-
-            
-            Player = new SimpleExoPlayer.Builder(Context)
-                .SetLoadControl(loadControl)
-                .SetBandwidthMeter(bandwidthMeter)
-                .Build();
+            Player = new SimpleExoPlayer.Builder(Context).Build();
+            Player = new ExoPlayerBuilder(Context)
+                Build();
             //Player.VideoSizeChanged += Player_VideoSizeChanged;
 
             var audioAttributes = new Com.Google.Android.Exoplayer2.Audio.AudioAttributes.Builder()
@@ -200,12 +179,18 @@ namespace MediaManager.Platforms.Android.Player
 
             PlayerEventListener = new PlayerEventListener()
             {
-                OnPlayerErrorImpl = (PlaybackException exception) =>
+                OnPlayerErrorImpl = (ExoPlaybackException exception) =>
                 {
-                    MediaManager.Logger?.LogError($"MediaItemFailed: {exception}");
+                    switch (exception.Type)
+                    {
+                        case ExoPlaybackException.TypeRenderer:
+                        case ExoPlaybackException.TypeSource:
+                        case ExoPlaybackException.TypeUnexpected:
+                            break;
+                    }
                     MediaManager.OnMediaItemFailed(this, new MediaItemFailedEventArgs(MediaManager.Queue.Current, exception, exception.Message));
                 },
-                OnTracksChangedImpl = (tracks) =>
+                OnTracksChangedImpl = (trackGroups, trackSelections) =>
                 {
                     InvokeBeforePlaying(this, new MediaPlayerEventArgs(MediaManager.Queue.Current, this));
 
@@ -259,6 +244,10 @@ namespace MediaManager.Platforms.Android.Player
                 OnIsPlayingChangedImpl = (bool isPlaying) =>
                 {
                     //TODO: Maybe call playing changed event
+                },
+                OnPlaybackSuppressionReasonChangedImpl = (int playbackSuppressionReason) =>
+                {
+                    //TODO: Maybe call event
                 }
             };
             Player.AddListener(PlayerEventListener);

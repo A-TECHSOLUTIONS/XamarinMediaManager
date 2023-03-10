@@ -11,7 +11,7 @@ namespace MediaManager.Platforms.Ios.Video
 
         private bool _savePlayer;
 
-        protected static MediaManagerImplementation MediaManager => CrossMediaManager.Ios;
+        protected static MediaManagerImplementation MediaManager => CrossMediaManager.Apple;
 
         public PlayerViewController()
         {

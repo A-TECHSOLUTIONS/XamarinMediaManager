@@ -16,16 +16,16 @@ namespace MediaManager.Platforms.Android.Player
         {
         }
 
-        public bool OnCommand(IPlayer player, string command, Bundle extras, ResultReceiver cb)
+        public bool OnCommand(IPlayer p0, string p2, Bundle p3, ResultReceiver p4)
         {
             return false;
         }
 
-        public void OnSetRating(IPlayer player, RatingCompat rating)
+        public void OnSetRating(IPlayer p0, RatingCompat p1)
         {
         }
 
-        public void OnSetRating(IPlayer player, RatingCompat rating, Bundle extras)
+        public void OnSetRating(IPlayer p0, RatingCompat p1, Bundle p2)
         {
         }
     }

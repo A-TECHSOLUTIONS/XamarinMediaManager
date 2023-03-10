@@ -1,9 +1,11 @@
-﻿using MediaManager.Library;
+﻿using System;
+using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Playback;
 using MediaManager.Player;
 using MediaManager.Queue;
 using MediaManager.Video;
+using Xamarin.Forms;
 
 namespace MediaManager.Forms
 {
@@ -154,6 +156,94 @@ namespace MediaManager.Forms
             BindableProperty.Create(nameof(Speed), typeof(float), typeof(VideoView), 1.0f, propertyChanged: OnSpeedPropertyChanged, defaultValueCreator: x => MediaManager.Speed);
 
         public static readonly BindableProperty VideoPlaceholderProperty =
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.ios10)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (netstandard2.0)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (net472)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.tvos10)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (tizen40)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (monoandroid10.0)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.mac20)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (netcoreapp3.1)'
+            Before:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());              
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            After:
+                        BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
+
+                    public static readonly BindableProperty IsFullWindowProperty =
+            */
             BindableProperty.Create(nameof(VideoPlaceholder), typeof(ImageSource), typeof(VideoView), null, propertyChanged: OnVideoPlaceholderPropertyChanged, defaultValueCreator: x => MediaManager.MediaPlayer.VideoPlaceholder?.ToImageSource());
 
         public static readonly BindableProperty IsFullWindowProperty =
@@ -253,6 +343,94 @@ namespace MediaManager.Forms
         {
             get { return (ImageSource)GetValue(VideoPlaceholderProperty); }
             set { SetValue(VideoPlaceholderProperty, value); }
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.ios10)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (netstandard2.0)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (net472)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.tvos10)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (tizen40)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (monoandroid10.0)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (xamarin.mac20)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
+
+            /* Unmerged change from project 'MediaManager.Forms (netcoreapp3.1)'
+            Before:
+                    }        
+
+                    public bool IsFullWindow
+            After:
+                    }
+
+                    public bool IsFullWindow
+            */
         }
 
         public bool IsFullWindow
@@ -308,9 +486,8 @@ namespace MediaManager.Forms
 
         private static async void OnVideoPlaceholderPropertyChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            //TODO: Add mac and Windows
-#if ANDROID || IOS
-            if (newValue is ImageSource imageSource)
+#if !NETSTANDARD
+            if (newValue is Xamarin.Forms.ImageSource imageSource)
                 MediaManager.MediaPlayer.VideoPlaceholder = await imageSource.ToNative().ConfigureAwait(false);
 #endif
         }

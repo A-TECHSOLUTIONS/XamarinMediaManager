@@ -1,11 +1,11 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content;
 using Android.Support.V4.Media.Session;
 using Com.Google.Android.Exoplayer2;
 using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Notifications;
-using MediaManager.Platforms.Android;
 using MediaManager.Platforms.Android.Media;
 using MediaManager.Platforms.Android.MediaSession;
 using MediaManager.Platforms.Android.Player;
@@ -23,7 +23,7 @@ using MediaManager.Volume;
 namespace MediaManager
 {
     [global::Android.Runtime.Preserve(AllMembers = true)]
-    public class MediaManagerImplementation : MediaManagerBase, IMediaManager<SimpleExoPlayer>
+    public class MediaManagerImplementation : MediaManagerBase, IMediaManager<IExoPlayer>
     {
         public MediaManagerImplementation()
         {
@@ -53,8 +53,6 @@ namespace MediaManager
             }
         }
 
-        public LoadControlSettings LoadControlSettings { get; } = new LoadControlSettings();
-        
         private MediaSessionCompat _mediaSession;
         public MediaSessionCompat MediaSession
         {
@@ -92,14 +90,11 @@ namespace MediaManager
             else
                 sessionIntent = Context.PackageManager.GetLaunchIntentForPackage(Context.PackageName);
 
-            var pendingIntentFlags = (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.S)
-                ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Mutable
-                : PendingIntentFlags.UpdateCurrent;
+            PendingIntentFlags flag = 0;
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
+                flag = PendingIntentFlags.Immutable;
 
-            //if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
-            //    pendingIntentFlags = PendingIntentFlags.Immutable;
-
-            return PendingIntent.GetActivity(Context, 0, sessionIntent, pendingIntentFlags);
+            return PendingIntent.GetActivity(Context, 0, sessionIntent, flag);
         }
 
         public override Dictionary<string, string> RequestHeaders
@@ -180,7 +175,7 @@ namespace MediaManager
         }
 
         public AndroidMediaPlayer AndroidMediaPlayer => (AndroidMediaPlayer)MediaPlayer;
-        public SimpleExoPlayer Player => AndroidMediaPlayer?.Player;
+        public IExoPlayer Player => AndroidMediaPlayer?.Player;
 
         private IVolumeManager _volume;
         public override IVolumeManager Volume
@@ -317,7 +312,17 @@ namespace MediaManager
 
             Queue.CurrentIndex = index;
 
-            MediaController.GetTransportControls().SkipToQueueItem(index);
+            Player.SeekTo(index, C.TimeUnset);
+            Player.Prepare(AndroidMediaPlayer.MediaSource, false, false);
+
+            
+
+            Player.PlayWhenReady = true;
+
+
+            var controls = MediaController.GetTransportControls();
+
+            //MediaController.GetTransportControls().SkipToQueueItem(index);
             return true;
         }
 

@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net7.0-android33.0</TargetFrameworks>
+    <TargetFrameworks>monoandroid12.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>MediaManager.FFmpegMediaMetadataRetriever</AssemblyName>
     <RootNamespace>MediaManager.FFmpegMediaMetadataRetriever</RootNamespace>
     <PackageId>Plugin.MediaManager.FFmpegMediaMetadataRetriever</PackageId>
-    <Description>Cross platform .NET plugin to play and control Audio and Video</Description>
+    <Description>Cross platform Xamarin plugin to play and control Audio and Video</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,45 +2,47 @@
   <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
     <DefineConstants>$(DefineConstants);NETSTANDARD;PORTABLE</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('netstandard2.0'))">
+    <DefineConstants>$(DefineConstants);NETSTANDARD20</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
     <DefineConstants>$(DefineConstants);NET;WPF;XAML</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net5'))">
     <DefineConstants>$(DefineConstants);NET;NET5</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <DefineConstants>$(DefineConstants);NET;NET6</DefineConstants>
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net6'))">
+    <DefineConstants>$(DefineConstants);NET;NET5</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
-    <DefineConstants>$(DefineConstants);NET;NET7</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" >
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('uap'))">
     <DefineConstants>$(DefineConstants);NETFX_CORE;XAML;WINDOWS;WINDOWS_UWP;UWP</DefineConstants>
+    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.ios'))">
     <DefineConstants>$(DefineConstants);MONO;UIKIT;COCOA;APPLE;IOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.mac'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;APPLE;MAC</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.tvos'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;APPLE;TVOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'watchos'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('xamarin.watchos'))">
     <DefineConstants>$(DefineConstants);MONO;COCOA;APPLE;WATCHOS</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('monoandroid'))">
     <DefineConstants>$(DefineConstants);MONO;ANDROID</DefineConstants>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AndroidResgenClass>Resource</AndroidResgenClass>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
   </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.EndsWith('netcoreapp'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('netcoreapp'))">
     <DefineConstants>$(DefineConstants);NETCOREAPP;NET;WPF;XAML</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('tizen'))">
     <DefineConstants>$(DefineConstants);TIZEN</DefineConstants>
     <TargetFrameworkIdentifier>Tizen</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v6.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
 </Project>

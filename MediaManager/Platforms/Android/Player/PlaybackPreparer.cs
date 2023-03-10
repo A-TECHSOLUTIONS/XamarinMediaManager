@@ -34,7 +34,7 @@ namespace MediaManager.Platforms.Android.Player
             PlaybackStateCompat.ActionPlayFromSearch |
             PlaybackStateCompat.ActionPlayFromUri;
 
-        public bool OnCommand(IPlayer player, string command, Bundle extras, ResultReceiver cb)
+        public bool OnCommand(IPlayer p0, string p2, Bundle p3, ResultReceiver p4)
         {
             return false;
         }

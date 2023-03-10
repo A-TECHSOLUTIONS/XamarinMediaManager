@@ -10,7 +10,7 @@ namespace MediaManager.Platforms.Ios.Media
         {
             if (item == null)
                 return null;
-#if IOS || MACCATALYST
+#if IOS
             var output = new MediaItem
             {
                 MediaType = item.MediaType.ToMediaType(),
@@ -62,7 +62,7 @@ namespace MediaManager.Platforms.Ios.Media
 
         public static IEnumerable<IMediaItem> ToMediaItems(this IEnumerable<MPMediaItem> items)
         {
-#if IOS || MACCATALYST
+#if IOS
             return items
                 .Where(i => i.AssetURL != null && i.IsCloudItem == false && i.HasProtectedAsset == false)
                 .Select(i => i.ToMediaItem());

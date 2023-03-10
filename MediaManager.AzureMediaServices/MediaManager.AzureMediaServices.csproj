@@ -1,13 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net7.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>MediaManager.AzureMediaServices</AssemblyName>
     <RootNamespace>MediaManager.AzureMediaServices</RootNamespace>
     <PackageId>Plugin.MediaManager.AzureMediaServices</PackageId>
-    <Description>Cross platform .NET plugin to play and control Audio and Video</Description>
+    <Description>Cross platform Xamarin plugin to play and control Audio and Video</Description>
   </PropertyGroup>
 
   <ItemGroup>

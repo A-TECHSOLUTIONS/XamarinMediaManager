@@ -19,8 +19,6 @@ namespace MediaManager
             InitTimer();
         }
 
-        public ILogger Logger { get; set; }
-
         private bool _isInitialized = true;
         public bool IsInitialized
         {

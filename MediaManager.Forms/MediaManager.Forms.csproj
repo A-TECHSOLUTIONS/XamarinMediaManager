@@ -1,27 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net7.0-android33.0;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
-
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
-
-    <UseMaui>true</UseMaui>
-    <SingleProject>true</SingleProject>
+    <!--xamarin.ios10;xamarin.mac20;xamarin.tvos10;;tizen40-->
+    <TargetFrameworks>netstandard2.0;monoandroid12.0</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">uap10.0.18362;net472;netcoreapp3.1;$(TargetFrameworks)</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>MediaManager.Forms</AssemblyName>
     <RootNamespace>MediaManager.Forms</RootNamespace>
     <PackageId>Plugin.MediaManager.Forms</PackageId>
-    <Description>Cross platform .NET plugin to play and control Audio and Video. This adds .NET MAUI / Xamarin.Forms specific features</Description>
+    <Description>Cross platform Xamarin plugin to play and control Audio and Video. This adds Xamarin.Forms specific features</Description>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <UseWPF Condition=" '$(OS)' == 'Windows_NT' ">true</UseWPF>
   </PropertyGroup>
 
+  <Import Project="$(SolutionDir)netcore.targets" Condition=" $(TargetFramework.StartsWith('netcoreapp3.1'))" />
+
   <ItemGroup>
+    <None Remove="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <Compile Remove="Platforms\**\*.cs" />
     <None Include="Platforms\**\*.cs" />
     <None Include="Resources\*.cs" />
@@ -29,48 +28,57 @@
     <None Include="readme.txt" pack="true" PackagePath="." />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' And $([MSBuild]::IsOSPlatform('windows'))">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) And '$(OS)' == 'Windows_NT'">
+    <Compile Include="Platforms\Net\**\*.cs" />
+    <Compile Include="Platforms\Wpf\**\*.cs" />
+    <PackageReference Include="Xamarin.Forms.Platform.WPF" Version="5.0.0.2012" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) And '$(OS)' == 'Windows_NT'">
+    <Compile Include="Platforms\Net\**\*.cs" />
+    <Compile Include="Platforms\Wpf\**\*.cs" />
+    <PackageReference Include="Xamarin.Forms.Platform.WPF" Version="5.0.0.2012" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) And '$(OS)' == 'Windows_NT'">
     <Compile Include="Platforms\Uap\**\*.cs" />
-    <!--<Page Include="Platforms\Uap\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />-->
-    <None Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
-    <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Ios\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
     <Compile Include="Platforms\Ios\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-    <None Remove="Platforms\Ios\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.mac')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
+    <None Remove="Platforms\Mac\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
-    <Compile Include="Platforms\Ios\**\*.cs" />
+    <Compile Include="Platforms\Mac\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
-    <None Remove="Platforms\Ios\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.tvos')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Tvos\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
-    <Compile Include="Platforms\Ios\**\*.cs" />
     <Compile Include="Platforms\Tvos\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'watchos'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.watchos')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Watchos\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
     <Compile Include="Platforms\Watchos\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
     <None Remove="Platforms\Android\**\*.cs" />
     <Compile Include="Platforms\Android\**\*.cs" />
     <AndroidResource Include="Resources\**\*.xml" SubType="Designer" Generator="MSBuild:UpdateAndroidResources" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <None Remove="Platforms\Tizen\**\*.cs" />
     <Compile Include="Platforms\Tizen\**\*.cs" />
   </ItemGroup>
@@ -79,4 +87,12 @@
     <ProjectReference Include="..\MediaManager\MediaManager.csproj" />
   </ItemGroup>
 
+  <!-- There is something not working correctly w.r.t. multi-targetting so adding
+    direct reference seems to help get the build to work -->
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.mac')) ">
+    <Reference Include="netstandard" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
+  </ItemGroup>
 </Project>
