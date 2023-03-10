@@ -1,15 +1,15 @@
-﻿using Android.Hardware.Lights;
-using Android.Runtime;
+﻿using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Metadata;
 using Com.Google.Android.Exoplayer2.Source;
 using Com.Google.Android.Exoplayer2.Trackselection;
 using Com.Google.Android.Exoplayer2.Video;
-using static Com.Google.Android.Exoplayer2.IPlayer;
+
+//using static Com.Google.Android.Exoplayer2.IPlayer;
 
 namespace MediaManager.Platforms.Android.Player
 {
-    public class PlayerEventListener : Java.Lang.Object, IEventListener, IPlayer.IListener
+    public class PlayerEventListener : Java.Lang.Object, Com.Google.Android.Exoplayer2.IPlayer.IListener // IEventListener
     {
         public PlayerEventListener()
         {
@@ -147,14 +147,11 @@ namespace MediaManager.Platforms.Android.Player
             OnPlaybackSuppressionReasonChangedImpl?.Invoke(playbackSuppressionReason);
         }
 
-        // The following methods were added per advice given here:
-        // https://github.com/Baseflow/XamarinMediaManager/issues/877#issuecomment-1322624782
 
         public void OnPositionDiscontinuity(IPlayer.PositionInfo oldPosition, IPlayer.PositionInfo newPosition, int reason)
         {
 
         }
-
 
 
         //public void OnTracksChanged(Com.Google.Android.Exoplayer2.Tracks tracks)
@@ -204,19 +201,19 @@ namespace MediaManager.Platforms.Android.Player
         }
 
         //Video related methods
-        public void OnSurfaceSizeChanged(int width, int height)
+        public void OnSurfaceSizeChanged(int width, int hight)
         {
-            Console.WriteLine($"OnSurfaceSizeChanged: {width}, {height}");
+
         }
 
         public void OnVideoSizeChanged(VideoSize size)
         {
-            Console.WriteLine($"OnVideoSizeChanged: {size}");
+
         }
 
         public void OnRenderedFirstFrame()
         {
-            Console.WriteLine($"OnRenderedFirstFrame");
+
         }
     }
 }
