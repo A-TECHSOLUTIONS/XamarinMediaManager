@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Audio;
+﻿using Android.Hardware.Lights;
+using Android.Runtime;
+using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Metadata;
 using Com.Google.Android.Exoplayer2.Source;
 using Com.Google.Android.Exoplayer2.Text;
@@ -154,6 +157,8 @@ namespace MediaManager.Platforms.Android.Player
             OnPlaybackSuppressionReasonChangedImpl?.Invoke(playbackSuppressionReason);
         }
 
+        // The following methods were added per advice given here:
+        // https://github.com/Baseflow/XamarinMediaManager/issues/877#issuecomment-1322624782
 
         public void OnPositionDiscontinuity(IPlayer.PositionInfo oldPosition, IPlayer.PositionInfo newPosition, int reason)
         {
@@ -256,9 +261,9 @@ namespace MediaManager.Platforms.Android.Player
         }
 
         //Video related methods
-        public void OnSurfaceSizeChanged(int width, int hight)
+        public void OnSurfaceSizeChanged(int width, int height)
         {
-
+            Console.WriteLine($"OnSurfaceSizeChanged: {width}, {height}");
         }
 
         public void OnVideoSizeChanged(VideoSize size)
