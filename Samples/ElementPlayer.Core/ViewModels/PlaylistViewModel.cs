@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using MvvmCross.Navigation;
+﻿using MvvmCross.Navigation;
 
 namespace ElementPlayer.Core.ViewModels
 {
     public class PlaylistViewModel : BaseViewModel
     {
-        public PlaylistViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
+        public PlaylistViewModel(IMvxLogProvider logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
         {
         }
     }

@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using MvvmCross.Navigation;
+﻿using MvvmCross.Navigation;
 
 namespace ElementPlayer.Core.ViewModels
 {
     public class QueueViewModel : BaseViewModel
     {
-        public QueueViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
+        public QueueViewModel(IMvxLogProvider logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
         {
         }
 
