@@ -22,10 +22,7 @@ namespace MediaManager.Platforms.Android.Media
             if (mediaItem.MediaLocation != MediaLocation.InMemory)
                 return ToMediaSource(mediaDescription, mediaItem.MediaType);
 
-            var factory = CreateDataSourceFactory(mediaItem);
-            return new ProgressiveMediaSource.Factory(factory)
-                .SetTag(mediaDescription)
-                .CreateMediaSource(global::Android.Net.Uri.Empty);
+            throw new NotSupportedException("In memory media items are not supported anymore.");
         }
 
         public static ClippingMediaSource ToClippingMediaSource(this IMediaItem mediaItem, TimeSpan stopAt)
@@ -59,30 +56,41 @@ namespace MediaManager.Platforms.Android.Media
                 case MediaType.Video:
                 case MediaType.Default:
                     mediaSource = new ProgressiveMediaSource.Factory(MediaManager.AndroidMediaPlayer.DataSourceFactory)
-                        .SetTag(mediaDescription)
-                        .CreateMediaSource(mediaUri);
+                        //TODO CHECK
+                        //.SetTag(mediaDescription)                        
+                        .CreateMediaSource(new Com.Google.Android.Exoplayer2.MediaItem.Builder().SetUri(mediaUri).SetTag(mediaDescription).Build());
                     break;
                 case MediaType.Dash:
+                    throw new NotImplementedException("Dash");
+                    /*
                     if (MediaManager.AndroidMediaPlayer.DashChunkSourceFactory == null)
                         throw new ArgumentNullException(nameof(AndroidMediaPlayer.DashChunkSourceFactory));
 
                     mediaSource = new DashMediaSource.Factory(MediaManager.AndroidMediaPlayer.DashChunkSourceFactory, MediaManager.AndroidMediaPlayer.DataSourceFactory)
                         .SetTag(mediaDescription)
                         .CreateMediaSource(mediaUri);
+                    */
                     break;
                 case MediaType.Hls:
+                    throw new NotImplementedException("Hls");
+                    /*
                     mediaSource = new HlsMediaSource.Factory(MediaManager.AndroidMediaPlayer.DataSourceFactory)
                         .SetAllowChunklessPreparation(true)
                         .SetTag(mediaDescription)
                         .CreateMediaSource(mediaUri);
+                    */
                     break;
                 case MediaType.SmoothStreaming:
+
+                    throw new NotImplementedException("SmoothStreaming");
+                    /*
                     if (MediaManager.AndroidMediaPlayer.SsChunkSourceFactory == null)
                         throw new ArgumentNullException(nameof(AndroidMediaPlayer.SsChunkSourceFactory));
 
                     mediaSource = new SsMediaSource.Factory(MediaManager.AndroidMediaPlayer.SsChunkSourceFactory, MediaManager.AndroidMediaPlayer.DataSourceFactory)
                         .SetTag(mediaDescription)
                         .CreateMediaSource(mediaUri);
+                    */
                     break;
                 default:
                     throw new ArgumentNullException(nameof(mediaType));
@@ -203,19 +211,19 @@ namespace MediaManager.Platforms.Android.Media
             return item;
         }
 
-        private static IDataSource.IFactory CreateDataSourceFactory(IMediaItem mediaItem)
-        {
-            //TODO: use own datasource factory that works with stream instead of bytes
-            using var memStream = new MemoryStream();
-            if (mediaItem.Data.CanSeek)
-            {
-                mediaItem.Data.Seek(0, SeekOrigin.Begin);
-            }
-
-            mediaItem.Data.CopyTo(memStream);
-            var bytes = memStream.ToArray();
-            var factory = new ByteArrayDataSourceFactory(bytes);
-            return factory;
-        }
+        // private static IDataSource.IFactory CreateDataSourceFactory(IMediaItem mediaItem)
+        // {
+        //     //TODO: use own datasource factory that works with stream instead of bytes
+        //     using var memStream = new MemoryStream();
+        //     if (mediaItem.Data.CanSeek)
+        //     {
+        //         mediaItem.Data.Seek(0, SeekOrigin.Begin);
+        //     }
+        //
+        //     mediaItem.Data.CopyTo(memStream);
+        //     var bytes = memStream.ToArray();
+        //     var factory = new ByteArrayDataSourceFactory(bytes);
+        //     return factory;
+        // }
     }
 }
