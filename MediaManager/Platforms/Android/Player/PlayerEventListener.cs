@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Audio;
-﻿using Android.Hardware.Lights;
+using Android.Hardware.Lights;
 using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Metadata;
@@ -193,6 +193,8 @@ namespace MediaManager.Platforms.Android.Player
 
         public void OnStaticMetadataChanged(System.Collections.Generic.IList<Metadata> metadataList)
         {
+            
+        }
         public void OnAudioAttributesChanged(AudioAttributes audioAttributes)
         {
             
