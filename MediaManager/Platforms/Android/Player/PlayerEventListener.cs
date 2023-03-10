@@ -1,7 +1,14 @@
-﻿using Android.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
+using Com.Google.Android.Exoplayer2.Audio;
 using Com.Google.Android.Exoplayer2.Metadata;
 using Com.Google.Android.Exoplayer2.Source;
+using Com.Google.Android.Exoplayer2.Text;
 using Com.Google.Android.Exoplayer2.Trackselection;
 using Com.Google.Android.Exoplayer2.Video;
 
@@ -19,7 +26,7 @@ namespace MediaManager.Platforms.Android.Player
         {
         }
 
-        public Action<TrackGroupArray, TrackSelectionArray> OnTracksChangedImpl { get; set; }
+        public Action<Tracks> OnTracksChangedImpl { get; set; }
         public Action<int> OnPositionDiscontinuityImpl { get; set; }
         public Action<bool, int> OnPlayerStateChangedImpl { get; set; }
         public Action<ExoPlaybackException> OnPlayerErrorImpl { get; set; }
@@ -32,7 +39,7 @@ namespace MediaManager.Platforms.Android.Player
         public Action<bool> OnIsPlayingChangedImpl { get; set; }
         public Action<int> OnPlaybackSuppressionReasonChangedImpl { get; set; }
 
-        public void OnTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections)
+        public void OnTracksChanged(Tracks tracks)
         {
             /*for (var i = 0; i < trackGroups.Length; i++)
             {
@@ -89,7 +96,7 @@ namespace MediaManager.Platforms.Android.Player
                 }
             }*/
 
-            OnTracksChangedImpl?.Invoke(trackGroups, trackSelections);
+            OnTracksChangedImpl?.Invoke(tracks);
         }
 
         public void OnPositionDiscontinuity(int reason)
@@ -181,6 +188,54 @@ namespace MediaManager.Platforms.Android.Player
 
         public void OnStaticMetadataChanged(System.Collections.Generic.IList<Metadata> metadataList)
         {
+        public void OnAudioAttributesChanged(AudioAttributes audioAttributes)
+        {
+            
+        }
+
+        public void OnAudioSessionIdChanged(int audioSessionId)
+        {
+            
+        }
+
+        public void OnAvailableCommandsChanged(PlayerCommands availableCommands)
+        {
+            
+        }
+
+        public void OnCues(CueGroup cueGroup)
+        {
+            
+        }
+
+        public void OnDeviceInfoChanged(DeviceInfo deviceInfo)
+        {
+            
+        }
+
+        public void OnDeviceVolumeChanged(int volume, bool muted)
+        {
+            
+        }
+
+        public void OnEvents(IPlayer player, PlayerEvents events)
+        {
+            
+        }
+
+        public void OnIsLoadingChanged(bool isLoading)
+        {
+            
+        }
+
+        public void OnMaxSeekToPreviousPositionChanged(long maxSeekToPreviousPositionMs)
+        {
+            
+        }
+
+        public void OnMediaItemTransition(MediaItem mediaItem, int reason)
+        {
+            
         }
 
         public void OnMediaMetadataChanged(MediaMetadata mediaMetadata)
@@ -209,11 +264,73 @@ namespace MediaManager.Platforms.Android.Player
         public void OnVideoSizeChanged(VideoSize size)
         {
 
+            
+        }
+
+        public void OnPlayWhenReadyChanged(bool playWhenReady, int reason)
+        {
+            
+        }
+
+        public void OnPlaybackStateChanged(int playbackState)
+        {
+            
+        }
+
+        public void OnPlayerError(PlaybackException error)
+        {
+            
+        }
+
+        public void OnPlayerErrorChanged(PlaybackException error)
+        {
+            
+        }
+
+        public void OnPlaylistMetadataChanged(MediaMetadata mediaMetadata)
+        {
+            
         }
 
         public void OnRenderedFirstFrame()
         {
 
+            
+        }
+
+        public void OnSeekBackIncrementChanged(long seekBackIncrementMs)
+        {
+            
+        }
+
+        public void OnSeekForwardIncrementChanged(long seekForwardIncrementMs)
+        {
+            
+        }
+
+        public void OnSkipSilenceEnabledChanged(bool skipSilenceEnabled)
+        {
+            
+        }
+
+        public void OnSurfaceSizeChanged(int width, int height)
+        {
+            
+        }
+
+        public void OnTrackSelectionParametersChanged(TrackSelectionParameters parameters)
+        {
+            
+        }
+
+        public void OnVideoSizeChanged(VideoSize videoSize)
+        {
+            
+        }
+
+        public void OnVolumeChanged(float volume)
+        {
+            
         }
     }
 }

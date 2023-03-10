@@ -1,4 +1,5 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
@@ -105,6 +106,7 @@ namespace MediaManager.Platforms.Android.MediaSession
 
             //Needed for enabling the notification as a mediabrowser.
             NotificationListener = new NotificationListener();
+            
             NotificationListener.OnNotificationCancelledImpl = (notificationId, dismissedByUser) =>
             {
                 StopForeground(dismissedByUser);
@@ -140,15 +142,28 @@ namespace MediaManager.Platforms.Android.MediaSession
             //PlayerNotificationManager.SetFastForwardIncrementMs((long)MediaManager.StepSizeForward.TotalMilliseconds);
             //PlayerNotificationManager.SetRewindIncrementMs((long)MediaManager.StepSizeBackward.TotalMilliseconds);
 
+            
+
+            //PlayerNotificationManager.SetFastForwardIncrementMs((long)MediaManager.StepSizeForward.TotalMilliseconds);
+            //PlayerNotificationManager.SetRewindIncrementMs((long)MediaManager.StepSizeBackward.TotalMilliseconds);
+            
             PlayerNotificationManager.SetMediaSessionToken(SessionToken);
             //PlayerNotificationManager.SetOngoing(true);
+
             PlayerNotificationManager.SetUsePlayPauseActions(MediaManager.Notification.ShowPlayPauseControls);
-            PlayerNotificationManager.SetUseNavigationActions(MediaManager.Notification.ShowNavigationControls);
+            PlayerNotificationManager.SetUseNextAction(MediaManager.Notification.ShowNavigationControls);
+            PlayerNotificationManager.SetUsePreviousAction(MediaManager.Notification.ShowNavigationControls);
+
+
+            PlayerNotificationManager.SetUseNextActionInCompactView(MediaManager.Notification.ShowNavigationControls);
+            PlayerNotificationManager.SetUsePreviousActionInCompactView(MediaManager.Notification.ShowNavigationControls);
+
+
             PlayerNotificationManager.SetSmallIcon(MediaManager.NotificationIconResource);
 
             //Must be called to start the connection
             (MediaManager.Notification as Notifications.NotificationManager).Player = MediaManager.Player;
-            //PlayerNotificationManager.SetPlayer(MediaManager.AndroidMediaPlayer.Player);
+            PlayerNotificationManager.SetPlayer(MediaManager.AndroidMediaPlayer.Player);
         }
 
         public override StartCommandResult OnStartCommand(Intent startIntent, StartCommandFlags flags, int startId)
@@ -180,10 +195,7 @@ namespace MediaManager.Platforms.Android.MediaSession
             MediaDescriptionAdapter = null;
 
             // Service is being killed, so make sure we release our resources
-
-            //TODO: Enable again
             //PlayerNotificationManager.SetNotificationListener(null);
-
             PlayerNotificationManager.SetPlayer(null);
             PlayerNotificationManager.Dispose();
             PlayerNotificationManager = null;
