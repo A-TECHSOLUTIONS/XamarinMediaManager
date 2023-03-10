@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Android.Hardware.Lights;
 using Android.Runtime;
 using Com.Google.Android.Exoplayer2;
-using Com.Google.Android.Exoplayer2.Audio;
 using Com.Google.Android.Exoplayer2.Metadata;
 using Com.Google.Android.Exoplayer2.Source;
-using Com.Google.Android.Exoplayer2.Text;
 using Com.Google.Android.Exoplayer2.Trackselection;
 using Com.Google.Android.Exoplayer2.Video;
+using static Com.Google.Android.Exoplayer2.IPlayer;
 
 namespace MediaManager.Platforms.Android.Player
 {
-    public class PlayerEventListener : Java.Lang.Object, IPlayerListener
+    public class PlayerEventListener : Java.Lang.Object, IEventListener, IPlayer.IListener
     {
         public PlayerEventListener()
         {
@@ -24,7 +19,7 @@ namespace MediaManager.Platforms.Android.Player
         {
         }
 
-        public Action<Tracks> OnTracksChangedImpl { get; set; }
+        public Action<TrackGroupArray, TrackSelectionArray> OnTracksChangedImpl { get; set; }
         public Action<int> OnPositionDiscontinuityImpl { get; set; }
         public Action<bool, int> OnPlayerStateChangedImpl { get; set; }
         public Action<ExoPlaybackException> OnPlayerErrorImpl { get; set; }
@@ -37,7 +32,7 @@ namespace MediaManager.Platforms.Android.Player
         public Action<bool> OnIsPlayingChangedImpl { get; set; }
         public Action<int> OnPlaybackSuppressionReasonChangedImpl { get; set; }
 
-        public void OnTracksChanged(Tracks tracks)
+        public void OnTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections)
         {
             /*for (var i = 0; i < trackGroups.Length; i++)
             {
@@ -94,7 +89,7 @@ namespace MediaManager.Platforms.Android.Player
                 }
             }*/
 
-            OnTracksChangedImpl?.Invoke(tracks);
+            OnTracksChangedImpl?.Invoke(trackGroups, trackSelections);
         }
 
         public void OnPositionDiscontinuity(int reason)
@@ -152,129 +147,76 @@ namespace MediaManager.Platforms.Android.Player
             OnPlaybackSuppressionReasonChangedImpl?.Invoke(playbackSuppressionReason);
         }
 
-        public void OnAudioAttributesChanged(AudioAttributes audioAttributes)
+        // The following methods were added per advice given here:
+        // https://github.com/Baseflow/XamarinMediaManager/issues/877#issuecomment-1322624782
+
+        public void OnPositionDiscontinuity(IPlayer.PositionInfo oldPosition, IPlayer.PositionInfo newPosition, int reason)
         {
-            
+
         }
 
-        public void OnAudioSessionIdChanged(int audioSessionId)
+
+
+        //public void OnTracksChanged(Com.Google.Android.Exoplayer2.Tracks tracks)
+        //{
+        //}
+
+
+        public void OnMediaItemTransition(MediaItem MediaItem, int reason)
         {
-            
         }
 
-        public void OnAvailableCommandsChanged(PlayerCommands availableCommands)
+        public void OnPlaybackStateChanged(int state)
         {
-            
-        }
-
-        public void OnCues(CueGroup cueGroup)
-        {
-            
-        }
-
-        public void OnDeviceInfoChanged(DeviceInfo deviceInfo)
-        {
-            
-        }
-
-        public void OnDeviceVolumeChanged(int volume, bool muted)
-        {
-            
-        }
-
-        public void OnEvents(IPlayer player, PlayerEvents events)
-        {
-            
-        }
-
-        public void OnIsLoadingChanged(bool isLoading)
-        {
-            
-        }
-
-        public void OnMaxSeekToPreviousPositionChanged(long maxSeekToPreviousPositionMs)
-        {
-            
-        }
-
-        public void OnMediaItemTransition(MediaItem mediaItem, int reason)
-        {
-            
-        }
-
-        public void OnMediaMetadataChanged(MediaMetadata mediaMetadata)
-        {
-            
-        }
-
-        public void OnMetadata(Metadata metadata)
-        {
-            
         }
 
         public void OnPlayWhenReadyChanged(bool playWhenReady, int reason)
         {
-            
         }
 
-        public void OnPlaybackStateChanged(int playbackState)
+        public void OnEvents(IPlayer Player, IPlayer.Events Events)
         {
-            
         }
 
-        public void OnPlayerError(PlaybackException error)
+        public void OnIsLoadingChanged(bool changed)
         {
-            
         }
 
-        public void OnPlayerErrorChanged(PlaybackException error)
+        public void OnStaticMetadataChanged(System.Collections.Generic.IList<Metadata> metadataList)
         {
-            
         }
 
-        public void OnPlaylistMetadataChanged(MediaMetadata mediaMetadata)
+        public void OnMediaMetadataChanged(MediaMetadata mediaMetadata)
         {
-            
+        }
+
+        public void OnMetadata(Metadata metadata)
+        {
+
+        }
+
+        public void OnDeviceVolumeChanged(int Volume, bool Muted)
+        {
+        }
+
+        public void OnAvailableCommandsChanged(global::Com.Google.Android.Exoplayer2.IPlayer.Commands? availableCommands)
+        {
+        }
+
+        //Video related methods
+        public void OnSurfaceSizeChanged(int width, int height)
+        {
+            Console.WriteLine($"OnSurfaceSizeChanged: {width}, {height}");
+        }
+
+        public void OnVideoSizeChanged(VideoSize size)
+        {
+            Console.WriteLine($"OnVideoSizeChanged: {size}");
         }
 
         public void OnRenderedFirstFrame()
         {
-            
-        }
-
-        public void OnSeekBackIncrementChanged(long seekBackIncrementMs)
-        {
-            
-        }
-
-        public void OnSeekForwardIncrementChanged(long seekForwardIncrementMs)
-        {
-            
-        }
-
-        public void OnSkipSilenceEnabledChanged(bool skipSilenceEnabled)
-        {
-            
-        }
-
-        public void OnSurfaceSizeChanged(int width, int height)
-        {
-            
-        }
-
-        public void OnTrackSelectionParametersChanged(TrackSelectionParameters parameters)
-        {
-            
-        }
-
-        public void OnVideoSizeChanged(VideoSize videoSize)
-        {
-            
-        }
-
-        public void OnVolumeChanged(float volume)
-        {
-            
+            Console.WriteLine($"OnRenderedFirstFrame");
         }
     }
 }
