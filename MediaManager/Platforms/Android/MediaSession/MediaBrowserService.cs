@@ -1,9 +1,12 @@
-﻿using Android.App;
+﻿using Android;
+using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.Media;
 using Android.Support.V4.Media.Session;
+using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using AndroidX.Media;
 using AndroidX.Media.Session;
@@ -12,7 +15,7 @@ using MediaManager.Platforms.Android.Media;
 
 namespace MediaManager.Platforms.Android.MediaSession
 {
-    [Service(Exported = true, Enabled = true)]
+    [Service(Exported = true, Enabled = true, ForegroundServiceType = ForegroundService.TypeMediaPlayback)]
     [IntentFilter(new[] { global::Android.Service.Media.MediaBrowserService.ServiceInterface })]
     public class MediaBrowserService : MediaBrowserServiceCompat
     {
@@ -65,7 +68,8 @@ namespace MediaManager.Platforms.Android.MediaSession
                     if (IsForeground && MediaController.PlaybackState.State == PlaybackStateCompat.StateNone)
                     {
                         //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundRemove);
-                        StopForeground(true);
+                        MediaManager.Logger?.LogInfo($"Stopping foreground service, {e.State}");
+                        StopForeground(StopForegroundFlags.Remove);
                         StopSelf();
                         IsForeground = false;
                     }
@@ -74,7 +78,8 @@ namespace MediaManager.Platforms.Android.MediaSession
                     if (IsForeground)
                     {
                         //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundDetach);
-                        StopForeground(false);
+                        MediaManager.Logger?.LogInfo("Stopping foreground service, MediaPlayerState.Paused");
+                        StopForeground(StopForegroundFlags.Detach);
                         //PlayerNotificationManager?.SetOngoing(false);
                         PlayerNotificationManager?.Invalidate();
                         IsForeground = false;
@@ -100,19 +105,22 @@ namespace MediaManager.Platforms.Android.MediaSession
         protected virtual void PrepareNotificationManager()
         {
             MediaDescriptionAdapter = new MediaDescriptionAdapter();
-            PlayerNotificationManager = new Com.Google.Android.Exoplayer2.UI.PlayerNotificationManager.Builder(
-                this,
-                ForegroundNotificationId,
-                ChannelId)
-                .SetMediaDescriptionAdapter(MediaDescriptionAdapter)
-                .SetNotificationListener(NotificationListener)
-                .Build();
+
+            // Create notification channel for media controls.
+            // if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            // {
+            //     var channel = new NotificationChannel(ChannelId, MediaManager.NotificationChannel, NotificationImportance.Low);
+            //     var nm = (NotificationManager)GetSystemService(NotificationService);
+            //     nm.CreateNotificationChannel(channel);
+            // }
+
 
             //Needed for enabling the notification as a mediabrowser.
             NotificationListener = new NotificationListener();
             NotificationListener.OnNotificationCancelledImpl = (notificationId, dismissedByUser) =>
             {
-                StopForeground(dismissedByUser);
+                MediaManager.Logger?.LogInfo($"Stopping foreground service, Notification cancelled. DismissedByUser: {dismissedByUser}");
+                StopForeground(dismissedByUser ? StopForegroundFlags.Remove : StopForegroundFlags.Detach);
                 //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundRemove);
 
                 StopSelf();
@@ -123,10 +131,24 @@ namespace MediaManager.Platforms.Android.MediaSession
                 if (ongoing && !IsForeground)
                 {
                     ContextCompat.StartForegroundService(ApplicationContext, new Intent(ApplicationContext, Java.Lang.Class.FromType(typeof(MediaBrowserService))));
-                    StartForeground(notificationId, notification);
+                    StartForeground(notificationId, notification, ForegroundService.TypeMediaPlayback);
+                    MediaManager.Logger?.LogInfo("Starting foreground service");
                     IsForeground = true;
                 }
             };
+            
+            PlayerNotificationManager = new Com.Google.Android.Exoplayer2.UI.PlayerNotificationManager.Builder(
+                this,
+                ForegroundNotificationId,
+                ChannelId)
+                .SetChannelNameResourceId(Resource.String.XamarinMediaManagerDescription)
+                .SetChannelDescriptionResourceId(Resource.String.XamarinMediaManagerDescription)
+
+                .SetMediaDescriptionAdapter(MediaDescriptionAdapter)
+                .SetNotificationListener(NotificationListener)
+                .Build();
+
+            
 
             //PlayerNotificationManager.SetFastForwardIncrementMs((long)MediaManager.StepSizeForward.TotalMilliseconds);
             //PlayerNotificationManager.SetRewindIncrementMs((long)MediaManager.StepSizeBackward.TotalMilliseconds);
@@ -136,6 +158,7 @@ namespace MediaManager.Platforms.Android.MediaSession
             PlayerNotificationManager.SetUsePlayPauseActions(MediaManager.Notification.ShowPlayPauseControls);
             //PlayerNotificationManager.SetUseNavigationActions(MediaManager.Notification.ShowNavigationControls);
             PlayerNotificationManager.SetSmallIcon(MediaManager.NotificationIconResource);
+            PlayerNotificationManager.SetPriority(NotificationCompat.PriorityLow);
 
             //Must be called to start the connection
             (MediaManager.Notification as Notifications.NotificationManager).Player = MediaManager.Player;
@@ -153,7 +176,8 @@ namespace MediaManager.Platforms.Android.MediaSession
 
         public override async void OnTaskRemoved(Intent rootIntent)
         {
-            StopForeground(true);
+            MediaManager.Logger?.LogInfo($"Stopping foreground service, Task removed");
+            StopForeground(StopForegroundFlags.Remove);
             await MediaManager.Stop();
             base.OnTaskRemoved(rootIntent);
         }
@@ -162,7 +186,8 @@ namespace MediaManager.Platforms.Android.MediaSession
         {
             //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundDetach);
 
-            StopForeground(true);
+            MediaManager.Logger?.LogInfo($"Stopping foreground service, MediaBrowserService destroyed");
+            StopForeground(StopForegroundFlags.Remove);
             MediaManager.StateChanged -= MediaManager_StateChanged;
 
             (MediaManager.Notification as Notifications.NotificationManager).Player = null;

@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/Baseflow/XamarinMediaManager</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <Version>1.1.1</Version>
+    <Version>1.2.4-xamarin</Version>
 
     <!--<Nullable>enable</Nullable>-->
     <ImplicitUsings>enable</ImplicitUsings>
@@ -32,6 +32,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <PublishReadyToRun Condition=" '$(PublishReadyToRun)' == '' and '$(OutputType)' == '' or '$(OutputType)' == 'Library' ">false</PublishReadyToRun>
     <!--<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
     <IncludeSymbols>true</IncludeSymbols>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>

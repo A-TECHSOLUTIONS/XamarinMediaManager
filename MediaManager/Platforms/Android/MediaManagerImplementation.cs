@@ -5,6 +5,7 @@ using Com.Google.Android.Exoplayer2;
 using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Notifications;
+using MediaManager.Platforms.Android;
 using MediaManager.Platforms.Android.Media;
 using MediaManager.Platforms.Android.MediaSession;
 using MediaManager.Platforms.Android.Player;
@@ -52,6 +53,8 @@ namespace MediaManager
             }
         }
 
+        public LoadControlSettings LoadControlSettings { get; } = new LoadControlSettings();
+        
         private MediaSessionCompat _mediaSession;
         public MediaSessionCompat MediaSession
         {
