@@ -153,6 +153,7 @@ namespace MediaManager.Platforms.Apple.Notifications
                 nowPlayingInfo.PlaybackRate = 0f;
             }
 
+#if __IOS__ || __TVOS__
             if (mediaItem.DisplayImage is UIKit.UIImage cover)
             {
                 //TODO: Why is this deprecated?

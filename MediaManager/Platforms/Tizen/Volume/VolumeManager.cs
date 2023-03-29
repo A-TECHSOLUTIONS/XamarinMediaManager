@@ -11,6 +11,6 @@ namespace MediaManager.Platforms.Tizen.Volume
         public override float Balance { get; set; }
         public override bool Muted { get; set; }
 
-        public override event VolumeChangedEventHandler VolumeChanged;
+        public override event EventHandler<VolumeChangedEventArgs> VolumeChanged;
     }
 }

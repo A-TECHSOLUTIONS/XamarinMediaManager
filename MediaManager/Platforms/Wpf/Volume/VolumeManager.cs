@@ -18,6 +18,6 @@ namespace MediaManager.Platforms.Wpf.Volume
 
         public override float Balance { get; set; }
 
-        public override event VolumeChangedEventHandler VolumeChanged;
+        public override event EventHandler<VolumeChangedEventArgs> VolumeChanged;
     }
 }

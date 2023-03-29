@@ -4,6 +4,8 @@ using Android.Graphics.Drawables;
 using Android.Support.V4.Media.Session;
 using Com.Google.Android.Exoplayer2;
 using Com.Google.Android.Exoplayer2.Ext.Mediasession;
+using Com.Google.Android.Exoplayer2.Metadata;
+using Com.Google.Android.Exoplayer2.Metadata.Icy;
 using Com.Google.Android.Exoplayer2.Source;
 using Com.Google.Android.Exoplayer2.Source.Dash;
 using Com.Google.Android.Exoplayer2.Source.Smoothstreaming;
@@ -30,7 +32,7 @@ namespace MediaManager.Platforms.Android.Player
         protected MediaSessionCompat MediaSession => MediaManager.MediaSession;
 
         protected string UserAgent { get; set; }
-        protected DefaultHttpDataSourceFactory HttpDataSourceFactory { get; set; }
+        protected DefaultHttpDataSource.Factory HttpDataSourceFactory { get; set; }
         public IDataSource.IFactory DataSourceFactory { get; set; }
         public DefaultDashChunkSource.Factory DashChunkSourceFactory { get; set; }
         public DefaultSsChunkSource.Factory SsChunkSourceFactory { get; set; }
@@ -47,6 +49,7 @@ namespace MediaManager.Platforms.Android.Player
         protected TimelineQueueEditor TimelineQueueEditor { get; set; }
         protected MediaSessionConnectorPlaybackPreparer PlaybackPreparer { get; set; }
         public PlayerEventListener PlayerEventListener { get; set; }
+        public MetadataOutput MetadataOutput { get; set; }
         protected RatingCallback RatingCallback { get; set; }
 
         private SimpleExoPlayer _player;
@@ -148,7 +151,7 @@ namespace MediaManager.Platforms.Android.Player
             else
                 UserAgent = Util.GetUserAgent(Context, Context.PackageName);
 
-            HttpDataSourceFactory = new DefaultHttpDataSourceFactory(UserAgent);
+            HttpDataSourceFactory = new DefaultHttpDataSource.Factory().SetUserAgent(UserAgent).SetAllowCrossProtocolRedirects(true);
             UpdateRequestHeaders();
 
             MediaSource = new ConcatenatingMediaSource();
@@ -157,7 +160,27 @@ namespace MediaManager.Platforms.Android.Player
             DashChunkSourceFactory = new DefaultDashChunkSource.Factory(DataSourceFactory);
             SsChunkSourceFactory = new DefaultSsChunkSource.Factory(DataSourceFactory);
 
-            Player = new SimpleExoPlayer.Builder(Context).Build();
+            // Improve buffering based on https://stackoverflow.com/questions/42643590/exoplayer-how-to-load-bigger-parts-of-remote-audio-files
+            var bandwidthMeter = new DefaultBandwidthMeter.Builder(Context).Build();
+
+            var loadControl = new DefaultLoadControl.Builder()
+                .SetAllocator(new DefaultAllocator(true, C.DefaultBufferSegmentSize))
+                .SetBufferDurationsMs(
+                    MediaManager.LoadControlSettings.MinBufferMs,
+                    MediaManager.LoadControlSettings.MaxBufferMs,
+                    
+                    MediaManager.LoadControlSettings.DefaultBufferForPlaybackMs, // buffer for playback
+                    MediaManager.LoadControlSettings.DefaultBufferForPlaybackAfterRebufferMs // buffer for playback affer rebuffer
+                )
+                .SetTargetBufferBytes(MediaManager.LoadControlSettings.TargetBufferBytes)
+                .SetPrioritizeTimeOverSizeThresholds(MediaManager.LoadControlSettings.PrioritizeTimeOverSizeTresholds)
+                
+                .Build();
+            
+            Player = new SimpleExoPlayer.Builder(Context)
+                .SetLoadControl(loadControl)
+                .SetBandwidthMeter(bandwidthMeter)
+                .Build();
             //Player.VideoSizeChanged += Player_VideoSizeChanged;
 
             var audioAttributes = new Com.Google.Android.Exoplayer2.Audio.AudioAttributes.Builder()
@@ -169,17 +192,17 @@ namespace MediaManager.Platforms.Android.Player
             Player.SetHandleAudioBecomingNoisy(true);
             Player.SetWakeMode(C.WakeModeNetwork);
 
+            MetadataOutput = new MetadataOutput()
+            {
+                OnMetadataImpl = (Metadata metadata) => ProcessMetadata(metadata)
+            };
+
+            Player.AddMetadataOutput(MetadataOutput);
+
             PlayerEventListener = new PlayerEventListener()
             {
                 OnPlayerErrorImpl = (ExoPlaybackException exception) =>
                 {
-                    switch (exception.Type)
-                    {
-                        case ExoPlaybackException.TypeRenderer:
-                        case ExoPlaybackException.TypeSource:
-                        case ExoPlaybackException.TypeUnexpected:
-                            break;
-                    }
                     MediaManager.OnMediaItemFailed(this, new MediaItemFailedEventArgs(MediaManager.Queue.Current, exception, exception.Message));
                 },
                 OnTracksChangedImpl = (trackGroups, trackSelections) =>
@@ -219,7 +242,7 @@ namespace MediaManager.Platforms.Android.Player
                             break;
                         case Com.Google.Android.Exoplayer2.Player.DiscontinuityReasonAutoTransition:
                             var currentWindowIndex = Player.CurrentWindowIndex;
-                            if (SetProperty(ref lastWindowIndex, currentWindowIndex))
+                            if (base.SetProperty(ref lastWindowIndex, currentWindowIndex))
                             {
                                 MediaManager.OnMediaItemFinished(this, new MediaItemEventArgs(MediaManager.Queue.Current));
                             }
@@ -240,6 +263,10 @@ namespace MediaManager.Platforms.Android.Player
                 OnPlaybackSuppressionReasonChangedImpl = (int playbackSuppressionReason) =>
                 {
                     //TODO: Maybe call event
+                },
+                OnMetadataChangedImpl = (Metadata metadata) =>
+                {
+                    ProcessMetadata(metadata);
                 }
             };
             Player.AddListener(PlayerEventListener);
@@ -249,6 +276,43 @@ namespace MediaManager.Platforms.Android.Player
             if (PlayerView != null && PlayerView.Player == null)
             {
                 PlayerView.Player = Player;
+            }
+        }
+
+        private static void ProcessMetadata(Metadata metadata)
+        {
+            for (var i = 0; i < metadata.Length(); i++)
+            {
+                using (var entry = metadata.Get(i))
+                {
+                    switch (entry)
+                    {
+                        case IcyHeaders icyHeaders:
+                            Console.WriteLine($"Icy-Headers: {icyHeaders.Name} {icyHeaders.Url} {icyHeaders.Genre}");
+                            //TODO: Change it to the variant of XamarinMediaManager.
+                            //return PlaybackMetadata("icy-headers", title = icyHeaders.Name, url = icyHeaders.Url, genre = icyHeaders.Genre);
+                            break;
+                        case IcyInfo icyInfo:
+                            string? artist;
+                            string? title;
+                            int index = icyInfo.Title == null ? -1 : icyInfo.Title.IndexOf(" - ", StringComparison.InvariantCultureIgnoreCase);
+                            if (index != -1)
+                            {
+                                artist = icyInfo.Title?.Substring(0, index);
+                                title = icyInfo.Title?.Substring(index + 3);
+                            }
+                            else
+                            {
+                                artist = null;
+                                title = icyInfo.Title;
+                            }
+
+                            //TODO: Change it to the variant of XamarinMediaManager.
+                            Console.WriteLine($"Icy-Headers: {title} {icyInfo.Url} {artist}");
+                            //return PlaybackMetadata("icy", title = title, url = entry.url, artist = artist);
+                            break;
+                    }
+                }
             }
         }
 
@@ -262,10 +326,7 @@ namespace MediaManager.Platforms.Android.Player
         {
             if (RequestHeaders?.Count > 0)
             {
-                foreach (var item in RequestHeaders)
-                {
-                    HttpDataSourceFactory?.DefaultRequestProperties.Set(item.Key, item.Value);
-                }
+                HttpDataSourceFactory?.SetDefaultRequestProperties(RequestHeaders);
             }
         }
 
@@ -355,6 +416,7 @@ namespace MediaManager.Platforms.Android.Player
             {
                 //Player.VideoSizeChanged -= Player_VideoSizeChanged;
                 Player.RemoveListener(PlayerEventListener);
+                Player.RemoveMetadataOutput(MetadataOutput);
                 Player.Release();
                 Player = null;
             }

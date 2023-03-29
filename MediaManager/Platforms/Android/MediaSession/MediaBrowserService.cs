@@ -1,9 +1,11 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.Media;
 using Android.Support.V4.Media.Session;
+using AndroidX.Core.App;
 using AndroidX.Core.Content;
 using AndroidX.Media;
 using AndroidX.Media.Session;
@@ -70,7 +72,7 @@ namespace MediaManager.Platforms.Android.MediaSession
                     if (IsForeground && MediaController.PlaybackState.State == PlaybackStateCompat.StateNone)
                     {
                         //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundRemove);
-                        StopForeground(true);
+                        StopForeground(StopForegroundFlags.Remove);
                         StopSelf();
                         IsForeground = false;
                     }
@@ -79,7 +81,7 @@ namespace MediaManager.Platforms.Android.MediaSession
                     if (IsForeground)
                     {
                         //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundDetach);
-                        StopForeground(false);
+                        StopForeground(StopForegroundFlags.Detach);
                         //PlayerNotificationManager?.SetOngoing(false);
                         PlayerNotificationManager?.Invalidate();
                         IsForeground = false;
@@ -105,12 +107,24 @@ namespace MediaManager.Platforms.Android.MediaSession
         protected virtual void PrepareNotificationManager()
         {
             MediaDescriptionAdapter = new MediaDescriptionAdapter();
-            PlayerNotificationManager = Com.Google.Android.Exoplayer2.UI.PlayerNotificationManager.CreateWithNotificationChannel(
-                this,
-                ChannelId,
-                Resource.String.exo_download_notification_channel_name,
-                ForegroundNotificationId,
-                MediaDescriptionAdapter);
+
+            // Create notification channel for media controls.
+            //if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            //{
+            //    var channel = new NotificationChannel(ChannelId, MediaManager.NotificationChannel, NotificationImportance.Low);
+            //    var nm = (NotificationManager)GetSystemService(NotificationService);
+            //    nm.CreateNotificationChannel(channel);
+            //}
+
+            PlayerNotificationManager = new Com.Google.Android.Exoplayer2.UI.PlayerNotificationManager.Builder(
+            	this,
+            	ForegroundNotificationId,
+            	ChannelId,
+            	MediaDescriptionAdapter)
+                .SetChannelNameResourceId(Resource.String.XamarinMediaManagerName)
+                .SetChannelDescriptionResourceId(Resource.String.XamarinMediaManagerDescription)
+                .SetNotificationListener(NotificationListener)
+                .Build();
 
             //Needed for enabling the notification as a mediabrowser.
             NotificationListener = new NotificationListener
@@ -185,15 +199,25 @@ namespace MediaManager.Platforms.Android.MediaSession
                     }
                 }
             };
+           /* PlayerNotificationManager = new Com.Google.Android.Exoplayer2.UI.PlayerNotificationManager.Builder(
+            	this,
+            	ForegroundNotificationId,
+            	ChannelId,
+            	MediaDescriptionAdapter)
+                .SetChannelNameResourceId(Resource.String.XamarinMediaManagerName)
+                .SetChannelDescriptionResourceId(Resource.String.XamarinMediaManagerDescription)
+                .SetNotificationListener(NotificationListener)
+                .Build();*/
 
-            //TODO: not sure why this is broken? Maybe in the binding
-            //PlayerNotificationManager.SetNotificationListener(NotificationListener);
+            //PlayerNotificationManager.SetFastForwardIncrementMs((long)MediaManager.StepSizeForward.TotalMilliseconds);
+            //PlayerNotificationManager.SetRewindIncrementMs((long)MediaManager.StepSizeBackward.TotalMilliseconds);
 
             PlayerNotificationManager.SetMediaSessionToken(SessionToken);
             //PlayerNotificationManager.SetOngoing(true);
             PlayerNotificationManager.SetUsePlayPauseActions(MediaManager.Notification.ShowPlayPauseControls);
-            PlayerNotificationManager.SetUseNavigationActions(MediaManager.Notification.ShowNavigationControls);
+            //PlayerNotificationManager.SetUseNavigationActions(MediaManager.Notification.ShowNavigationControls);
             PlayerNotificationManager.SetSmallIcon(MediaManager.NotificationIconResource);
+            PlayerNotificationManager.SetPriority(NotificationCompat.PriorityLow);
 
             //Must be called to start the connection
             if (MediaManager.Notification is Notifications.NotificationManager notificationManager)
@@ -212,7 +236,7 @@ namespace MediaManager.Platforms.Android.MediaSession
 
         public override async void OnTaskRemoved(Intent rootIntent)
         {
-            StopForeground(true);
+            StopForeground(StopForegroundFlags.Remove);
             await MediaManager.Stop();
             base.OnTaskRemoved(rootIntent);
         }

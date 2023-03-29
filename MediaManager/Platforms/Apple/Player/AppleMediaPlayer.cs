@@ -11,7 +11,7 @@ namespace MediaManager.Platforms.Apple.Player
 {
     public abstract class AppleMediaPlayer : MediaPlayerBase, IMediaPlayer<AVQueuePlayer>
     {
-        protected MediaManagerImplementation MediaManager = CrossMediaManager.Ios;
+        protected MediaManagerImplementation MediaManager = CrossMediaManager.Apple;
 
         private AVQueuePlayer _player;
         public AVQueuePlayer Player
@@ -94,6 +94,7 @@ namespace MediaManager.Platforms.Apple.Player
                         MediaManager.Queue.Current.Title = split.LastOrDefault();
                     }
                 }
+                //TODO: Maybe add sending notification here.
             }
         }
 
