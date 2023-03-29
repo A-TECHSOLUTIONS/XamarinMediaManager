@@ -139,8 +139,8 @@ namespace MediaManager
             set
             {
                 base.StepSizeForward = value;
-                var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
-                playerNotificationManager?.SetFastForwardIncrementMs((long)value.TotalMilliseconds);
+                //var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
+                //playerNotificationManager?.SetFastForwardIncrementMs((long)value.TotalMilliseconds);
             }
         }
 
@@ -150,8 +150,8 @@ namespace MediaManager
             set
             {
                 base.StepSizeBackward = value;
-                var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
-                playerNotificationManager?.SetRewindIncrementMs((long)value.TotalMilliseconds);
+                //var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
+                //playerNotificationManager?.SetRewindIncrementMs((long)value.TotalMilliseconds);
             }
         }
         [Obsolete("Use StepSizeForward and StepSizeBackward properties instead.", true)]

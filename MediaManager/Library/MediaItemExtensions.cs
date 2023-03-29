@@ -4,9 +4,8 @@
     {
         public static IDictionary<string, object> ToDictionary(this IMediaItem mediaItem)
         {
-            if (mediaItem == null)
-                throw new ArgumentNullException(nameof(mediaItem));
-            
+            ArgumentNullException.ThrowIfNull(mediaItem);
+
             var mediaItemDict = new Dictionary<string, object>();
             foreach (var item in mediaItem.GetType().GetProperties())
             {
@@ -19,8 +18,7 @@
 
         public static string GetTitle(this IMediaItem mediaItem)
         {
-            if (mediaItem == null)
-                throw new ArgumentNullException(nameof(mediaItem));
+            ArgumentNullException.ThrowIfNull(mediaItem);
 
             if (!string.IsNullOrEmpty(mediaItem.DisplayTitle))
                 return mediaItem.DisplayTitle;
@@ -32,8 +30,7 @@
 
         public static string GetContentTitle(this IMediaItem mediaItem)
         {
-            if (mediaItem == null)
-                throw new ArgumentNullException(nameof(mediaItem));
+            ArgumentNullException.ThrowIfNull(mediaItem);
 
             if (!string.IsNullOrEmpty(mediaItem.DisplaySubtitle))
                 return mediaItem.DisplaySubtitle;
@@ -49,8 +46,7 @@
 
         public static string GetSubText(this IMediaItem mediaItem)
         {
-            if (mediaItem == null)
-                throw new ArgumentNullException(nameof(mediaItem));
+            ArgumentNullException.ThrowIfNull(mediaItem);
 
             if (!string.IsNullOrEmpty(mediaItem.Album))
                 return mediaItem.Album;

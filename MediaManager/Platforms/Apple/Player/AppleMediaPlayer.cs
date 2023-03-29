@@ -11,7 +11,7 @@ namespace MediaManager.Platforms.Apple.Player
 {
     public abstract class AppleMediaPlayer : MediaPlayerBase, IMediaPlayer<AVQueuePlayer>
     {
-        protected MediaManagerImplementation MediaManager = CrossMediaManager.Apple;
+        protected MediaManagerImplementation MediaManager = CrossMediaManager.Ios;
 
         private AVQueuePlayer _player;
         public AVQueuePlayer Player

@@ -12,7 +12,7 @@ using MediaManager.Platforms.Android.Media;
 
 namespace MediaManager.Platforms.Android.MediaSession
 {
-    [Service(Exported = true, Enabled = true)]
+    [Service(Exported = true, Enabled = true, ForegroundServiceType = ForegroundService.TypeMediaPlayback)]
     [IntentFilter(new[] { global::Android.Service.Media.MediaBrowserService.ServiceInterface })]
     public class MediaBrowserService : MediaBrowserServiceCompat
     {
@@ -157,6 +157,34 @@ namespace MediaManager.Platforms.Android.MediaSession
 
             PlayerNotificationManager.SetFastForwardIncrementMs((long)MediaManager.StepSizeForward.TotalMilliseconds);
             PlayerNotificationManager.SetRewindIncrementMs((long)MediaManager.StepSizeBackward.TotalMilliseconds);
+            //Needed for enabling the notification as a mediabrowser.
+            NotificationListener = new NotificationListener
+            {
+                OnNotificationCancelledImpl = (notificationId, dismissedByUser) =>
+                {
+                    StopForeground(dismissedByUser ? StopForegroundFlags.Remove : StopForegroundFlags.Detach);
+                    //ServiceCompat.StopForeground(this, ServiceCompat.StopForegroundRemove);
+
+                    StopSelf();
+                    IsForeground = false;
+                },
+                OnNotificationPostedImpl = (notificationId, notification, ongoing) =>
+                {
+                    if (ongoing && !IsForeground)
+                    {
+                        ContextCompat.StartForegroundService(ApplicationContext, new Intent(ApplicationContext, MediaBrowserManager.ServiceType));
+                        if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+                        {
+                            StartForeground(notificationId, notification, ForegroundService.TypeMediaPlayback);
+                        }
+                        else
+                        {
+                            StartForeground(notificationId, notification);
+                        }
+                        IsForeground = true;
+                    }
+                }
+            };
 
             //TODO: not sure why this is broken? Maybe in the binding
             //PlayerNotificationManager.SetNotificationListener(NotificationListener);
