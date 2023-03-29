@@ -1,6 +1,5 @@
 ﻿using MediaManager.Video;
-using Microsoft.UI.Xaml.Controls;
-//using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls;
 
 namespace MediaManager.Platforms.Uap.Video
 {

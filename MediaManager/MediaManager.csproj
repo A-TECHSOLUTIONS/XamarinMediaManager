@@ -1,35 +1,22 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;monoandroid12.0;monoandroid13.0</TargetFrameworks>
-
-    <!--
     <TargetFrameworks>netstandard2.0;xamarin.ios10;xamarin.mac20;xamarin.tvos10;monoandroid12.0;tizen40</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">uap10.0.18362;net472;netcoreapp3.1;$(TargetFrameworks)</TargetFrameworks>
-    -->
-
-  
-    <SingleProject>true</SingleProject>
-    <ImplicitUsings>disable</ImplicitUsings>
-
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyName>MediaManager</AssemblyName>
     <RootNamespace>MediaManager</RootNamespace>
     <PackageId>Plugin.MediaManager</PackageId>
-    <Description>Cross platform .NET Xamarin plugin to play and control Audio and Video</Description>
+    <Description>Cross platform Xamarin plugin to play and control Audio and Video</Description>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework.Contains('android'))">
-    <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
-    <DefineConstants>$(DefineConstants);ANDROID</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' And $([MSBuild]::IsOSPlatform('windows'))">
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('uap')) And '$(OS)' == 'Windows_NT'">
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
-    <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
-    <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
   </PropertyGroup>
+
+  <Import Project="$(SolutionDir)netcore.targets" Condition=" $(TargetFramework.StartsWith('netcoreapp3.1'))" />
 
   <ItemGroup>
     <Compile Remove="Platforms\**\*.cs" />
@@ -39,28 +26,44 @@
     <None Include="readme.txt" pack="true" PackagePath="." />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' And $([MSBuild]::IsOSPlatform('windows'))">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) And '$(OS)' == 'Windows_NT'">
+    <None Remove="Platforms\Wpf\**\*.cs" />
+    <Compile Include="Platforms\Wpf\**\*.cs" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3')) And '$(OS)' == 'Windows_NT'">
+    <None Remove="Platforms\Wpf\**\*.cs" />
+    <Compile Include="Platforms\Wpf\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) And '$(OS)' == 'Windows_NT'">
     <Compile Include="Platforms\Uap\**\*.cs" />
-    <!--<Page Include="Platforms\Uap\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />-->
+    <Page Include="Platforms\Uap\**\*.xaml" SubType="Designer" Generator="MSBuild:Compile" />
     <None Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
     <Compile Update="**\*.xaml.cs" DependentUpon="%(Filename)" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.ios')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Ios\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
     <Compile Include="Platforms\Ios\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
-    <None Remove="Platforms\Ios\**\*.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.mac')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
+    <None Remove="Platforms\Mac\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
-    <Compile Include="Platforms\Ios\**\*.cs" />
+    <Compile Include="Platforms\Mac\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tvos'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.tvos')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Ios\**\*.cs" />
     <None Remove="Platforms\Tvos\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
@@ -68,26 +71,25 @@
     <Compile Include="Platforms\Tvos\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'watchos'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('xamarin.watchos')) ">
+    <None Remove="Platforms\Apple\**\*.cs" />
     <None Remove="Platforms\Watchos\**\*.cs" />
     <Compile Include="Platforms\Apple\**\*.cs" />
     <Compile Include="Platforms\Watchos\**\*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.Contains('android'))">
-
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('monoandroid')) ">
     <None Remove="Platforms\Android\**\*.cs" />
     <Compile Include="Platforms\Android\**\*.cs" />
-    <AndroidResource Include="Platforms\Android\Resources\**\*.xml" SubType="Designer" Generator="MSBuild:UpdateAndroidResources" />
-    <PackageReference Include="Xam.Plugins.Android.ExoPlayer" Version="2.18.9-xamarin.1" />
+    <AndroidResource Include="Resources\**\*.xml" SubType="Designer" Generator="MSBuild:UpdateAndroidResources" />
+    <PackageReference Include="Xam.Plugins.Android.ExoPlayer" Version="2.14.6" />
     <!--<PackageReference Include="Xam.Plugins.Android.ExoPlayer.Cast" Version="2.11.8" />
     <PackageReference Include="Xam.Plugins.Android.ExoPlayer.Leanback" Version="2.11.8" />-->
-    <PackageReference Include="Xam.Plugins.Android.ExoPlayer.MediaSession" Version="2.18.9-xamarin.1" />
+    <PackageReference Include="Xam.Plugins.Android.ExoPlayer.MediaSession" Version="2.14.6" />
   </ItemGroup>
 
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('tizen')) ">
     <None Remove="Platforms\Tizen\**\*.cs" />
     <Compile Include="Platforms\Tizen\**\*.cs" />
   </ItemGroup>
-
 </Project>

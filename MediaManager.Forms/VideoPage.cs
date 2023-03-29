@@ -1,4 +1,6 @@
-﻿namespace MediaManager.Forms
+﻿using Xamarin.Forms;
+
+namespace MediaManager.Forms
 {
     public class VideoPage : ContentPage
     {

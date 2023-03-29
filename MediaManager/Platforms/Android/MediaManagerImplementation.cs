@@ -5,7 +5,6 @@ using Com.Google.Android.Exoplayer2;
 using MediaManager.Library;
 using MediaManager.Media;
 using MediaManager.Notifications;
-using MediaManager.Platforms.Android;
 using MediaManager.Platforms.Android.Media;
 using MediaManager.Platforms.Android.MediaSession;
 using MediaManager.Platforms.Android.Player;
@@ -53,8 +52,6 @@ namespace MediaManager
             }
         }
 
-        public LoadControlSettings LoadControlSettings { get; } = new LoadControlSettings();
-        
         private MediaSessionCompat _mediaSession;
         public MediaSessionCompat MediaSession
         {
@@ -92,14 +89,11 @@ namespace MediaManager
             else
                 sessionIntent = Context.PackageManager.GetLaunchIntentForPackage(Context.PackageName);
 
-            var pendingIntentFlags = (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.S)
-                ? PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Mutable
-                : PendingIntentFlags.UpdateCurrent;
+            PendingIntentFlags flag = 0;
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
+                flag = PendingIntentFlags.Immutable;
 
-            //if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M)
-            //    pendingIntentFlags = PendingIntentFlags.Immutable;
-
-            return PendingIntent.GetActivity(Context, 0, sessionIntent, pendingIntentFlags);
+            return PendingIntent.GetActivity(Context, 0, sessionIntent, flag);
         }
 
         public override IDictionary<string, string> RequestHeaders
@@ -145,8 +139,8 @@ namespace MediaManager
             set
             {
                 base.StepSizeForward = value;
-                //var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
-                //playerNotificationManager?.SetFastForwardIncrementMs((long)value.TotalMilliseconds);
+                var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
+                playerNotificationManager?.SetFastForwardIncrementMs((long)value.TotalMilliseconds);
             }
         }
 
@@ -156,8 +150,8 @@ namespace MediaManager
             set
             {
                 base.StepSizeBackward = value;
-                //var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
-                //playerNotificationManager?.SetRewindIncrementMs((long)value.TotalMilliseconds);
+                var playerNotificationManager = (Notification as MediaManager.Platforms.Android.Notifications.NotificationManager)?.PlayerNotificationManager;
+                playerNotificationManager?.SetRewindIncrementMs((long)value.TotalMilliseconds);
             }
         }
         [Obsolete("Use StepSizeForward and StepSizeBackward properties instead.", true)]

@@ -33,10 +33,8 @@ namespace MediaManager
 
 #if ANDROID
         public static MediaManagerImplementation Android => (MediaManagerImplementation)Current;
-#elif IOS
-        public static MediaManagerImplementation Ios => (MediaManagerImplementation)Current;
-#elif MACCATALYST
-        public static MediaManagerImplementation Ios => (MediaManagerImplementation)Current;
+#elif APPLE
+        public static MediaManagerImplementation Apple => (MediaManagerImplementation)Current;
 #elif UWP
         public static MediaManagerImplementation Windows => (MediaManagerImplementation)Current;
 #elif TIZEN
@@ -47,7 +45,7 @@ namespace MediaManager
 
         private static IMediaManager CreateMediaManager()
         {
-#if NET7 || NETSTANDARD
+#if NETSTANDARD
             return null;
 #else
 #pragma warning disable IDE0022 // Use expression body for methods

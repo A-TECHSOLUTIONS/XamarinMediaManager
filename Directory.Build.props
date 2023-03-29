@@ -3,6 +3,9 @@
     <Copyright>Copyright (c) Baseflow</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Baseflow/XamarinMediaManager</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Baseflow/XamarinMediaManager/develop/icon.png</PackageIconUrl>
+    <!--<PackageIcon>icon.png</PackageIcon>
+    <PackageIconFullPath>$(MSBuildThisFileDirectory)icon.png</PackageIconFullPath>-->
     <Authors>Martijn van Dijk</Authors>
     <Owners>Martijn van Dijk</Owners>
     <PackageTags>xamarin, android, plugin, MediaManager, media, audio, video</PackageTags>
@@ -29,10 +32,11 @@
     
     <IsTestProject>$(MSBuildProjectName.Contains('UnitTest'))</IsTestProject>
     <IsLibraryProject>$(MSBuildProjectName.Contains('MediaManager'))</IsLibraryProject>
+
+    <DisableExtraReferences>true</DisableExtraReferences>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <PublishReadyToRun Condition=" '$(PublishReadyToRun)' == '' and '$(OutputType)' == '' or '$(OutputType)' == 'Library' ">false</PublishReadyToRun>
     <!--<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
     <IncludeSymbols>true</IncludeSymbols>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -60,8 +64,21 @@
     <None Include="$(MSBuildThisFileDirectory)\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false' and '$(IsLibraryProject)' == 'true'">
+    <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFrameworkMonikerAssemblyAttributesPath>$([System.IO.Path]::Combine('$(IntermediateOutputPath)','$(TargetFrameworkMoniker).AssemblyAttributes$(DefaultLanguageSourceExtension)'))</TargetFrameworkMonikerAssemblyAttributesPath>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.2.0">
+    <EmbeddedFiles Include="$(GeneratedAssemblyInfoFile)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Roslynator.Analyzers" Version="4.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,4 +1,6 @@
-﻿namespace MediaManager.Forms
+﻿using Xamarin.Forms;
+
+namespace MediaManager.Forms
 {
     public static partial class ImageSourceExtensions
     {
@@ -16,8 +18,8 @@
                 return cgImage.ToImageSource();
 #elif UWP
             //TODO: This one should not be async. It might deadlock
-            //if (image is Windows.UI.Xaml.Media.Imaging.BitmapImage bitmapImage)
-            //    return bitmapImage.ToImageSource();
+            if (image is Windows.UI.Xaml.Media.Imaging.BitmapImage bitmapImage)
+                return bitmapImage.ToImageSource();
 #endif
             return null;
         }
