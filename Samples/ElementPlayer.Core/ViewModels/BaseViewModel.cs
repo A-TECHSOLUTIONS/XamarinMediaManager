@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using MvvmCross.Navigation;
+﻿using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 
 namespace ElementPlayer.Core.ViewModels
 {
     public class BaseViewModel : MvxNavigationViewModel
     {
-        public BaseViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
+        public BaseViewModel(IMvxLogProvider logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
         {
         }
 
@@ -15,7 +14,7 @@ namespace ElementPlayer.Core.ViewModels
 
     public abstract class BaseViewModel<TParameter> : BaseViewModel, IMvxViewModel<TParameter>
     {
-        public BaseViewModel(ILoggerFactory logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
+        public BaseViewModel(IMvxLogProvider logProvider, IMvxNavigationService navigationService) : base(logProvider, navigationService)
         {
         }
 
